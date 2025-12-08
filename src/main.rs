@@ -4,6 +4,7 @@ mod days;
 mod util;
 
 use std::env::args;
+use std::time::Instant;
 use days::{get_day, Day};
 use util::input::{read_input};
 use util::number::{parse_i32};
@@ -46,20 +47,23 @@ fn run_day(day_num: &str)
         .and_then(|d| get_day(d).and_then(|day| read_input(d).and_then(|input| Ok((input, day)))));
     match result {
         Ok((input, day)) => {
+            let p1_start = Instant::now();
             match (day.puzzle1)(&input) {
                 Ok(res) => {
-                    println!("Day {0} part 1 result: {1}", day_num, res);
+                    println!("Day {} part 1 result: {} (took {}ms)", day_num, res, Instant::now().duration_since(p1_start).as_millis());
                 },
                 Err(err) => {
-                    eprintln!("Day {0} part 1 failed: {1}", day_num, err);
+                    eprintln!("Day {} part 1 failed: {}", day_num, err);
                 }
             }
+
+            let p2_start = Instant::now();
             match (day.puzzle2)(&input) {
                 Ok(res) => {
-                    println!("Day {0} part 2 result: {1}", day_num, res);
+                    println!("Day {} part 2 result: {} (took {}ms)", day_num, res, Instant::now().duration_since(p2_start).as_millis());
                 },
                 Err(err) => {
-                    eprintln!("Day {0} part 2 failed: {1}", day_num, err);
+                    eprintln!("Day {} part 2 failed: {}", day_num, err);
                 }
             }
         }
