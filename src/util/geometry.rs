@@ -16,6 +16,10 @@ pub struct Point {
     pub y: isize,
 }
 
+pub fn p(v: impl Into<Point>) -> Point {
+    v.into()
+}
+
 impl Point {
     pub fn get_points_around(&self, directions: Directions) -> Vec<Point> {
         let mut points = vec![];
