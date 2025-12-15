@@ -299,17 +299,27 @@ impl Ord for Point3D {
 impl Point3D {
     pub fn distance(&self, other: &Self) -> Self {
         Point3D {
-            x: other.x - self.x,
-            y: other.y - self.y,
-            z: other.z - self.z,
+            x: (other.x - self.x).abs(),
+            y: (other.y - self.y).abs(),
+            z: (other.z - self.z).abs(),
         }
     }
 
-    pub fn manhattan(&self, other: &Self) -> usize {
-        let x = (self.x - other.x).abs();
-        let y = (self.y - other.y).abs();
-        let z = (self.z - other.z).abs();
-        return (x + y + z) as usize;
+    pub fn manhattan_distance(&self, other: &Self) -> usize {
+        let Point3D { x, y, z } = self.distance(other);
+
+        (x + y + z) as usize
+    }
+
+    pub fn euclidean_distance(&self, other: &Self) -> f64 {
+        // Double pythagorean calc; getting the length on the X,Y; and using that to get the length from that line with Z
+        // XY² = X² + Y²
+        // XZ² = XY² + Z² = X² + Y² + Z²
+
+        let Point3D { x, y, z } = self.distance(other);
+        let squared = x * x + y * y + z * z;
+
+        (squared as f64).sqrt()
     }
 
     pub fn translate(&self, other: &Self) -> Self {
@@ -360,9 +370,9 @@ mod point3d_tests {
     }
 
     #[test]
-    fn test_manhattan() {
-        assert_eq!(Point3D { x: 1105, y: -1205, z: 1229 }.manhattan(&Point3D { x: -92, y: -2380, z: -20 }), 3621);
-        assert_eq!(Point3D { x: -92, y: -2380, z: -20 }.manhattan(&Point3D { x: 1105, y: -1205, z: 1229 }), 3621);
+    fn test_manhattan_distance() {
+        assert_eq!(Point3D { x: 1105, y: -1205, z: 1229 }.manhattan_distance(&Point3D { x: -92, y: -2380, z: -20 }), 3621);
+        assert_eq!(Point3D { x: -92, y: -2380, z: -20 }.manhattan_distance(&Point3D { x: 1105, y: -1205, z: 1229 }), 3621);
     }
 }
 
