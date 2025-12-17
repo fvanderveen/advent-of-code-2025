@@ -1,6 +1,9 @@
 // Allow dead_code since this is a util file copied across years. Later in the AoC we might use everything, or not.
 #![allow(dead_code)]
 
+use std::collections::HashSet;
+use std::hash::Hash;
+
 pub trait CollectionExtension<T> {
     fn deduplicate(&self) -> Self;
     fn union(&self, other: &Self) -> Self;
@@ -44,6 +47,39 @@ impl<T> CollectionExtension<T> for Vec<T> where T: Clone + Eq {
 
     fn map<U, F>(&self, mapper: F) -> Vec<U>
         where F: Fn(&T) -> U {
+        self.iter().map(mapper).collect()
+    }
+}
+
+impl<T> CollectionExtension<T> for HashSet<T> where T: Clone + Eq + Hash {
+    fn deduplicate(&self) -> Self {
+        self.clone() // set is unique by default
+    }
+
+    fn union(&self, other: &Self) -> Self {
+        self.iter().cloned().filter(|v| other.contains(v)).collect()
+    }
+
+    fn except(&self, item: &T) -> Self {
+        self.iter().cloned().filter(|v| v.ne(item)).collect()
+    }
+
+    fn prepend_item(&self, item: &T) -> Self {
+        vec![item.clone()].into_iter().chain(self.clone()).collect()
+    }
+
+    fn append_item(&self, item: &T) -> Self {
+        self.iter().cloned().chain(vec![item.clone()].into_iter()).collect()
+    }
+
+    fn push_all(&mut self, other: &Self) {
+        for value in other {
+            self.insert(value.clone());
+        }
+    }
+
+    fn map<U, F>(&self, mapper: F) -> Vec<U>
+    where F: Fn(&T) -> U {
         self.iter().map(mapper).collect()
     }
 }
