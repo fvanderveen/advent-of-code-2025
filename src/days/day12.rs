@@ -14,7 +14,7 @@ fn puzzle1(input: &String) -> Result<String, String> {
 
     let mut solvable = 0;
     for i in 0..puzzle.areas.len() {
-        println!("Solving {}", i);
+        // println!("Solving {}", i);
         if let Some(_) = puzzle.solve_area(i) {
             solvable += 1;
         }
@@ -50,7 +50,7 @@ impl Puzzle {
         // Dumb filter; if the presents fit tiled (just next to each other), no need to compute
         let tiled: usize = area.presents.iter().copied().sum();
         if (tiled * 9) <= available {
-            println!("Fits easily (just tile everything without compacting)");
+            // println!("Fits easily (just tile everything without compacting)");
             return Some(Grid::empty()) // We don't, at this point, use the grid, so we don't fill it.
         }
 
@@ -60,7 +60,7 @@ impl Puzzle {
             .sum();
 
         if needed > available {
-            println!("Area can never fit all presents :silly:");
+            // println!("Area can never fit all presents :silly:");
             return None
         }
 

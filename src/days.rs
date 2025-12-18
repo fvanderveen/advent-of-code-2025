@@ -29,7 +29,7 @@ pub struct Day {
     pub puzzle2: fn(input: &String) -> Result<String, String>
 }
 
-pub fn get_day(day: i32) -> Result<Day, String> {
+pub fn get_day(day: usize) -> Result<Day, String> {
     match day {
         1 => Ok(DAY1),
         2 => Ok(DAY2),

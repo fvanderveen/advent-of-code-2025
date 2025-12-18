@@ -6,7 +6,7 @@ use regex::{Captures, RegexBuilder};
 use handlebars::{Handlebars};
 use serde_json::{json};
 
-pub fn create_day(day: i32) -> Result<(), String> {
+pub fn create_day(day: usize) -> Result<(), String> {
     match get_day(day) {
         Err(_) => {
             let main_dir = match current_dir() {

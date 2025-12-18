@@ -7,7 +7,7 @@ use std::env::args;
 use std::time::Instant;
 use days::{get_day, Day};
 use util::input::{read_input};
-use util::number::{parse_i32};
+use crate::util::number::parse_usize;
 
 fn print_usage()
 {
@@ -17,23 +17,31 @@ Usage: cargo run <command> [<command_arg>, ...]
 Commands:
     day <day number> - run the puzzles for the given day.
     add <day number> - add base files and wiring for a new day.
+    race             - race through implemented days, keeping track of time.
 ");
 }
 
 fn main() {
     let a: Vec<String> = args().collect();
 
-    if a.len() < 3 {
-        print_usage();
-        return;
-    }
-
     match a[1].as_str() {
-        "day" => {
-            run_day(&a[2])
+        "race" if a.len() == 2 => {
+            let mut day = 1;
+            let start = Instant::now();
+
+            while run_day(day) {
+                day += 1;
+            }
+
+            println!("Finished AoC race: {}ms", Instant::now().duration_since(start).as_millis());
         }
-        "add" => {
-            add_day(&a[2])
+        "day" if a.len() == 3 => {
+            let Some(day) = parse_usize(&a[2]).ok() else { panic!("Invalid day number {}", &a[2]) };
+            run_day(day);
+        }
+        "add" if a.len() == 3 => {
+            let Some(day) = parse_usize(&a[2]).ok() else { panic!("Invalid day number {}", &a[2]) };
+            add_day(day);
         }
         _ => {
             print_usage();
@@ -41,10 +49,9 @@ fn main() {
     }
 }
 
-fn run_day(day_num: &str)
+fn run_day(day_num: usize) -> bool
 {
-    let result: Result<(String, Day), String> = parse_i32(day_num)
-        .and_then(|d| get_day(d).and_then(|day| read_input(d).and_then(|input| Ok((input, day)))));
+    let result: Result<(String, Day), String> = get_day(day_num).and_then(|day| read_input(day_num).and_then(|input| Ok((input, day))));
     match result {
         Ok((input, day)) => {
             let p1_start = Instant::now();
@@ -53,7 +60,7 @@ fn run_day(day_num: &str)
                     println!("Day {} part 1 result: {} (took {}ms)", day_num, res, Instant::now().duration_since(p1_start).as_millis());
                 },
                 Err(err) => {
-                    eprintln!("Day {} part 1 failed: {}", day_num, err);
+                    eprintln!("Day {} part 1 failed: {} (took {}ms)", day_num, err, Instant::now().duration_since(p1_start).as_millis());
                 }
             }
 
@@ -63,28 +70,24 @@ fn run_day(day_num: &str)
                     println!("Day {} part 2 result: {} (took {}ms)", day_num, res, Instant::now().duration_since(p2_start).as_millis());
                 },
                 Err(err) => {
-                    eprintln!("Day {} part 2 failed: {}", day_num, err);
+                    eprintln!("Day {} part 2 failed: {} (took {}ms)", day_num, err, Instant::now().duration_since(p1_start).as_millis());
                 }
             }
+
+            true
         }
         Err(err) => {
             eprintln!("{}", err);
+            false
         }
     }
 }
 
-fn add_day(input: &str)
+fn add_day(day: usize)
 {
     // This is going to be fun. Write code to modify the running code! Woohoo!
-    match parse_i32(input) {
-        Ok(day) => {
-            match util::create_day::create_day(day) {
-                Ok(_) => { println!("Successfully added day {}", day); }
-                Err(e) => { panic!("{}", e); }
-            }
-        }
-        Err(err) => {
-            panic!("{}", err);
-        }
+    match util::create_day::create_day(day) {
+        Ok(_) => { println!("Successfully added day {}", day); }
+        Err(e) => { panic!("{}", e); }
     }
 }

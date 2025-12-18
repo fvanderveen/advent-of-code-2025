@@ -1,6 +1,6 @@
 use std::fs::{read_to_string, exists};
 
-pub fn read_input(day: i32) -> Result<String, String> {
+pub fn read_input(day: usize) -> Result<String, String> {
     let input_path = format!("resources/day{:02}.txt", day);
 
     match exists(&input_path) {
